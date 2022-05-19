@@ -2,7 +2,7 @@ job "le-exporter" {
   region      = "global"
   datacenters = ["cwdc"]
 
-  group "cert-manager" {
+  group "le-exporter" {
     count = 1
 
     network {
@@ -20,6 +20,8 @@ job "le-exporter" {
         interval = "2s"
         timeout  = "1s"
       }
+
+      #Have traefik send all the acme challenges to us
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.acme-challenge-server.rule=PathPrefix(`/.well-known/acme-challenge/`)",
