@@ -6,6 +6,9 @@ job "le-exporter" {
     count = 1
 
     network {
+      dns {
+        servers = ["10.10.0.1"]
+      }
       port "http" {
         to = 5566
       }
@@ -48,8 +51,8 @@ job "le-exporter" {
         data        = <<EOF
 ACME_PEM_PATH=/local/privkey
 CONSUL_HTTP_TOKEN={{ with secret "consul/creds/le-exporter" }}{{.Data.token}}{{ end }}
-CONSUL_HTTP_HOST=192.168.25.32
-VAULT_HTTP_ADDR=https://192.168.25.137:8200
+CONSUL_HTTP_HOST=consul.service.consul
+VAULT_HTTP_ADDR=https://active.vault.service.consul:8200
 EOF
         env         = true
         destination = "local/config.env"
