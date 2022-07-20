@@ -46,11 +46,11 @@ function checkTags(tags, skipPrefixes = true) {
         tags = [tags]
     }
     for (let tag of tags) {
-        if (res = tag.split(/`/).map(e => e.match(/^cert-for=(.*)$/)).filter(truthy).map(e => e[1])) {
-            for (let match of res) {
-                domains.push(...(match.split(/\s?,\s?/g)))
-            }
+        let res = tag.match(/(?<=`)((?:\w*\.)*\w*)(?=`)/g)
+        if (res) {
+            res.filter(truthy).forEach(e => domains.push(e))
         }
+    
     }
     return domains
 }
@@ -166,6 +166,7 @@ async function recheckAll() {
     let domains = await getAllDomains()
     let allDomains = new Set(domains)
     for (let domain of allDomains){
+        console.log(domain)
         await validateAndGenerateCert(domain)
     }
 }
