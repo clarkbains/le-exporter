@@ -172,32 +172,37 @@ async function recheckAll() {
 }
 
 function addWatchers(){
-    let catalogWatch = consul.watch({
-        method: consul.catalog.services,
-        options: {dc: Config.ConsulDC},
-        backoffFactor: 1000
-    })
-    
-    let kvWatch = consul.watch({
-        method: consul.kv.get,
-        options: {key: Config.ConsulOtherDomainPath},
-        backoffFactor: 1000
-    })
-    
-    
-    catalogWatch.on('change', async (data, res)=>{
-        let s = new Set(await getRegisteredCatalogDomains())
-        console.log("New changes to catalog")
-        s.forEach((e) => {validateAndGenerateCert(e)})
-    })
-    
-    
-    
-    kvWatch.on('change', async (data, res)=>{
-        let s = new Set(await getRegisteredKVDomains())
-        console.log("New changes to K/V store")
-        s.forEach( (e) => {validateAndGenerateCert(e)})
-    })
+    try {
+        let catalogWatch = consul.watch({
+            method: consul.catalog.services,
+            options: {dc: Config.ConsulDC},
+            backoffFactor: 1000
+        })
+
+        let kvWatch = consul.watch({
+            method: consul.kv.get,
+            options: {key: Config.ConsulOtherDomainPath},
+            backoffFactor: 1000
+        })
+
+
+        catalogWatch.on('change', async (data, res)=>{
+            let s = new Set(await getRegisteredCatalogDomains())
+            console.log("New changes to catalog")
+            s.forEach((e) => {validateAndGenerateCert(e)})
+        })
+
+
+
+        kvWatch.on('change', async (data, res)=>{
+            let s = new Set(await getRegisteredKVDomains())
+            console.log("New changes to K/V store")
+            s.forEach( (e) => {validateAndGenerateCert(e)})
+        })
+    } catch (e){
+        console.log("Error while watching. ", e)
+    }
+
 }
 
 
