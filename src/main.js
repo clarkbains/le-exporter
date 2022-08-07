@@ -84,10 +84,12 @@ async function needsToGenerateCert(domain){
         const parsedCert = new crypto.X509Certificate(cert)
 
         validityEnd = new Date(parsedCert.validTo).getTime()/A_DAY
+        console.log(`Domain '${domain}' valid until ${new Date(parsedCert.validTo)}`)
         if (currentDate <= (validityEnd - Config.RenewalThreshold)){
             return false
         }
     } catch (e){
+        console.log(`Error while checking if cert needs to be generated for ${domain}`, e)
     }
     return true
 }
